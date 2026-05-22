@@ -1,0 +1,122 @@
+\section{问题三：基于连续制氨调节的运行优化}
+
+\subsection{模型建立}
+
+问题三将电氢氨装置的运行方式从离散（全额开机/停机）扩展为连续可调（功率下限10\%），决策变量从二进制$x(t) \in \{0,1\}$变为连续出力系数$\alpha(t)$。当设备开机时$\alpha(t) \in [0.1, 1]$，停机时$\alpha(t) = 0$。求解流程如图\ref{fig:flow_q3}所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.38\textheight,keepaspectratio]{../figures/fig_flow_q3.pdf}
+\caption{问题三求解流程图}\label{fig:flow_q3}
+\end{figure}
+
+\textbf{目标函数}：最小化吨氨成本
+\begin{equation}
+\min_{\alpha, P_{\text{buy}}, P_{\text{sell}}} \quad C_{\text{ton}} = \frac{\sum_{t=1}^{24} [\lambda_{\text{buy}}(t) \cdot P_{\text{buy}}(t) - \lambda_{\text{sell}} \cdot P_{\text{sell}}(t)] \times 1000 + C_{\text{RE}} + C_{\text{OM}} + C_{\text{dep}}}{Q_{\text{NH3}}}
+\end{equation}
+
+\textbf{约束条件}：
+
+产量等式约束：
+\begin{equation}
+\sum_{t=1}^{24} \alpha(t) \cdot 3.0 = Q_{\text{NH3}}, \quad \text{即} \quad \sum_{t=1}^{24} \alpha(t) = h
+\end{equation}
+
+功率平衡约束（逐时段）：
+\begin{equation}
+P_{\text{buy}}(t) - P_{\text{sell}}(t) = P_{\text{load}}(t) + \alpha(t) \cdot P_{\text{H2NH3}} - P_{\text{RE}}(t)
+\end{equation}
+
+变量界约束：$0 \leq \alpha(t) \leq 1$，$P_{\text{buy}}(t) \geq 0$，$P_{\text{sell}}(t) \geq 0$
+
+\subsection{求解算法}
+
+将上述模型转化为标准线性规划形式。决策变量向量为
+\[
+\mathbf{x} = [\alpha_1, \ldots, \alpha_{24}, P_{\text{buy},1}, \ldots, P_{\text{buy},24}, P_{\text{sell},1}, \ldots, P_{\text{sell},24}]^T
+\]
+共72维。目标函数系数向量中，$\alpha$对应的系数通过链式关系由购售电成本间接确定，$P_{\text{buy}}$对应$\lambda_{\text{buy}}(t) \times 1000$，$P_{\text{sell}}$对应$-\lambda_{\text{sell}} \times 1000$。采用SLSQP（序列二次规划）算法求解，该方法适用于带等式和不等式约束的非线性优化问题，在本问题中由于目标函数和约束均为线性，SLSQP可在多项式时间内收敛到全局最优解。
+
+\subsection{24种场景全年分析}
+
+\subsubsection{最优调度方案}
+
+连续调节模式下，各产量在典型场景中的负荷率调度热力图如图\ref{fig:q3_dispatch}所示。高风光时段（白天）的出力系数接近1.0，低风光时段（夜间）的出力系数降至0.1或停机，实现了制氢氨负荷对风光出力的主动跟踪。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{../figures/fig_q3_dispatch.pdf}
+\caption{连续调节模式下各产量典型场景负荷率调度热力图}\label{fig:q3_dispatch}
+\end{figure}
+
+与问题二的离散调节相比，连续调节的优势在于：在风光出力介于停机阈值和满负荷之间的时段，可以精确匹配可用新能源功率，既不产生购电需求，也不产生弃电。这种精细调节能力显著减少了能量浪费和购电成本。
+
+\subsubsection{全年统计结果}
+
+24种场景下各产量的吨氨成本热力图如图\ref{fig:q3_alpha_heatmap}所示，反映了不同风光组合条件对各产量方案经济性的影响。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{../figures/fig_q3_alpha_heatmap.pdf}
+\caption{24种场景下各产量吨氨成本热力图}\label{fig:q3_alpha_heatmap}
+\end{figure}
+
+全年分析结果如表\ref{tab:q3_annual}所示。连续调节模式下，全年最优产量仍为36吨/日，年均吨氨成本4283.62元/吨。与问题二最显著的差异在于绿电指标的改善：全满足天数从0天提升至165天，全不满足天数从45天降为0天，表明连续调节有效提升了绿电合规水平。
+
+\begin{table}[H]
+\centering
+\caption{问题三全年分析结果}\label{tab:q3_annual}
+\begin{tabular}{cccccc}
+\toprule
+产量(吨/日) & 均值成本 & 最小成本 & 最大成本 & 全满足(场景数) & 全不满足 \\
+\midrule
+72 & 7239.98 & 5420.77 & 8977.95 & 9 & 0 \\
+63 & 6462.02 & 3934.90 & 8824.76 & 20 & 0 \\
+54 & 5716.82 & 3273.94 & 8167.25 & 16 & 0 \\
+45 & 5065.26 & 2549.67 & 7551.31 & 16 & 0 \\
+36 & 4283.62 & 1483.01 & 6966.53 & 11 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{与问题二对比分析}
+
+\subsubsection{成本对比}
+
+问题三与问题二的年均吨氨成本配对对比如图\ref{fig:q3_compare_q2}所示，各产量的改善幅度如表\ref{tab:q3_compare}所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/fig_q3_compare_q2.pdf}
+\caption{问题三与问题二年均吨氨成本配对对比}\label{fig:q3_compare_q2}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{连续调节与离散调节成本对比}\label{tab:q3_compare}
+\begin{tabular}{ccccc}
+\toprule
+产量(吨/日) & 问题二成本(元/吨) & 问题三成本(元/吨) & 改善幅度(\%) \\
+\midrule
+72 & 7228.33 & 7228.33 & 0.00 \\
+63 & 6575.46 & 6462.02 & 1.73 \\
+54 & 5970.54 & 5716.82 & 4.25 \\
+45 & 5363.38 & 5065.26 & 5.56 \\
+36 & 4585.15 & 4283.62 & 6.58 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+连续调节相比离散调节的成本改善幅度为1.73\%--6.58\%，且产量越低改善越明显。产量72吨/日时两者等价（必须全天满负荷运行，无调节空间）；产量36吨/日时改善最大（6.58\%），这是因为低产量方案有更多的调节自由度，连续可调使得负荷能够更精细地匹配风光波动。
+
+\subsubsection{绿电指标对比}
+
+全年吨氨成本分布曲线的对比如图\ref{fig:q3_annual_cost}所示。连续调节模式下，成本分布曲线整体左移（成本降低），且高成本尾部明显缩短，表明极端不利场景下的经济性风险得到有效缓解。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/fig_q3_annual_cost.pdf}
+\caption{全年吨氨成本分布曲线（问题二与问题三对比）}\label{fig:q3_annual_cost}
+\end{figure}
+
+绿电指标方面，连续调节的最大贡献在于消除了"全不满足"场景：问题二中有3个场景（产量36吨/日）三项指标均不达标，问题三中降为0个。这是因为连续调节可以在风光不足时段降低功率而非完全停机，减少了被迫大量购电的情况，从而改善了自发自用比例$r_1$和上网比例$r_3$。

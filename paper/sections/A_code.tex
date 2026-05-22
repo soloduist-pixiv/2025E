@@ -1,0 +1,146 @@
+\section{核心代码}
+
+\subsection{公共工具模块}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+import numpy as np
+import pandas as pd
+from scipy.optimize import linprog, minimize
+
+# 设备参数（基准产能36吨/日）
+P_ALKEL_BASE = 10    # MW
+P_PEMEL_BASE = 10    # MW
+P_NH3_BASE = 0.75    # MW
+P_H2NH3_BASE = 20.75 # MW
+Q_NH3_BASE = 36      # 吨/日
+WIND_CAP = 40        # MW
+PV_CAP = 64          # MW
+LOAD_PEAK = 6        # MW
+
+# 分时电价（元/kWh）
+TOU_PRICE = {
+    'peak': 1.0,    # 峰时段
+    'flat': 0.7,    # 平时段
+    'valley': 0.4   # 谷时段
+}
+SELL_PRICE = 0.3779  # 上网电价
+
+def calc_green_indicators(E_use, E_RE, E_buy, E_sell):
+    r1 = (E_use - E_sell - E_buy) / E_RE * 100
+    r2 = (E_RE - E_sell) / E_use * 100
+    r3 = E_sell / E_RE * 100
+    return r1, r2, r3
+
+def calc_ton_cost(C_buy, R_sell, C_RE, C_OM, C_dep, Q_NH3):
+    return (C_buy - R_sell + C_RE + C_OM + C_dep) / Q_NH3
+\end{lstlisting}
+
+\subsection{问题一：功率平衡计算}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+def solve_problem1(wind_pu, pv_pu, load_pu):
+    P_wind = wind_pu * WIND_CAP
+    P_pv = pv_pu * PV_CAP
+    P_load = load_pu * LOAD_PEAK
+    P_total = P_load + P_H2NH3_BASE
+    P_net = P_wind + P_pv - P_total
+    P_sell = np.maximum(P_net, 0)
+    P_buy = np.maximum(-P_net, 0)
+    E_use = np.sum(P_total)
+    E_RE = np.sum(P_wind + P_pv)
+    E_buy = np.sum(P_buy)
+    E_sell = np.sum(P_sell)
+    r1, r2, r3 = calc_green_indicators(E_use, E_RE, E_buy, E_sell)
+    return {'E_use': E_use, 'E_RE': E_RE, 'E_buy': E_buy,
+            'E_sell': E_sell, 'r1': r1, 'r2': r2, 'r3': r3}
+\end{lstlisting}
+
+\subsection{问题二：离散调节优化}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+def solve_problem2_greedy(P_wind, P_pv, P_load, tou_prices, Q_target):
+    k = Q_target / Q_NH3_BASE
+    P_H2NH3 = P_H2NH3_BASE * k * 2
+    h = int(Q_target / 3.0)
+    P_surplus = P_wind + P_pv - P_load
+    marginal_costs = np.zeros(24)
+    for t in range(24):
+        deficit = P_H2NH3 - P_surplus[t]
+        if deficit > 0:
+            marginal_costs[t] = tou_prices[t] * deficit * 1000
+        else:
+            marginal_costs[t] = -SELL_PRICE * (-deficit) * 1000
+    sorted_idx = np.argsort(marginal_costs)
+    x = np.zeros(24)
+    x[sorted_idx[:h]] = 1
+    return x, marginal_costs
+\end{lstlisting}
+
+\subsection{问题三：连续调节优化}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+def solve_problem3_lp(P_wind, P_pv, P_load, tou_prices, Q_target):
+    k = Q_target / Q_NH3_BASE
+    P_H2NH3 = P_H2NH3_BASE * k * 2
+    h = Q_target / 3.0
+    n = 24
+    c = np.zeros(3 * n)  # [alpha, P_buy, P_sell]
+    c[n:2*n] = [p * 1000 for p in tou_prices]
+    c[2*n:3*n] = -SELL_PRICE * 1000
+    A_eq = np.zeros((n + 1, 3 * n))
+    b_eq = np.zeros(n + 1)
+    for t in range(n):
+        A_eq[t, t] = P_H2NH3
+        A_eq[t, n + t] = -1
+        A_eq[t, 2*n + t] = 1
+        b_eq[t] = P_wind[t] + P_pv[t] - P_load[t]
+    A_eq[n, :n] = 1
+    b_eq[n] = h
+    bounds = [(0, 1)]*n + [(0, None)]*n + [(0, None)]*n
+    res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds)
+    return res.x[:n], res.x[n:2*n], res.x[2*n:3*n]
+\end{lstlisting}
+
+\subsection{问题四：储能配置优化}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+def solve_offgrid_with_storage(P_wind, P_pv, P_load, C_bat):
+    P_H2NH3 = P_H2NH3_BASE * 2
+    eta_ch, eta_dis, sigma = 0.9, 0.9, 0.002
+    n = 24
+    # LP: max sum(alpha) subject to power balance + SOC dynamics
+    c = np.zeros(4*n + n+1)  # [alpha, P_ch, P_dis, E(0..24)]
+    c[:n] = -1  # maximize production
+    # Build constraints for power balance and SOC dynamics
+    A_eq_rows, b_eq_rows = [], []
+    for t in range(n):
+        row = np.zeros(4*n + n+1)
+        row[t] = P_H2NH3          # alpha * P_H2NH3
+        row[n + t] = 1            # + P_ch
+        row[2*n + t] = -1         # - P_dis
+        A_eq_rows.append(row)
+        b_eq_rows.append(P_wind[t] + P_pv[t] - P_load[t])
+    # SOC dynamics: E(t+1) = (1-sigma)*E(t) + eta_ch*P_ch - P_dis/eta_dis
+    for t in range(n):
+        row = np.zeros(4*n + n+1)
+        row[3*n + t+1] = 1
+        row[3*n + t] = -(1 - sigma)
+        row[n + t] = -eta_ch
+        row[2*n + t] = 1/eta_dis
+        A_eq_rows.append(row)
+        b_eq_rows.append(0)
+    # SOC boundary: E(0) = E(24) = 0.5*C_bat
+    row_init = np.zeros(4*n + n+1)
+    row_init[3*n] = 1
+    A_eq_rows.append(row_init)
+    b_eq_rows.append(0.5 * C_bat)
+    row_end = np.zeros(4*n + n+1)
+    row_end[3*n + n] = 1
+    A_eq_rows.append(row_end)
+    b_eq_rows.append(0.5 * C_bat)
+    bounds = ([(0,1)]*n + [(0, 0.5*C_bat)]*n +
+              [(0, 0.5*C_bat)]*n + [(0.1*C_bat, 0.9*C_bat)]*(n+1))
+    res = linprog(c, A_eq=np.array(A_eq_rows),
+                  b_eq=np.array(b_eq_rows), bounds=bounds)
+    return res
+\end{lstlisting}

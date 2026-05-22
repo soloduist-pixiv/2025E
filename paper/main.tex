@@ -1,0 +1,97 @@
+% !TeX program = xelatex
+% 电工杯数学建模竞赛模板 — 基于 neepumcm 文档类
+\documentclass[a4paper]{neepumcm}
+%  graphicx, booktabs, colortbl, xcolor 已由 neepumcm.cls 加载，不要重复加载
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{algorithm2e}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+\usepackage{longtable}
+\usepackage{listings}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  tabsize=4
+}
+
+% === 引用上标格式 ===
+\makeatletter
+\def\@cite#1#2{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
+\makeatother
+
+\mcmsetup{CTeX = true,
+        tcn = 0000,
+        problem = A,
+        timu = 绿电直连型电氢氨园区优化运行}
+\setmainfont{Times New Roman}
+\setmonofont[
+    Path=fonts/,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Italic
+]{UbuntuMono}
+
+\begin{document}
+
+\begin{abstract}
+
+本文针对绿电直连型电氢氨园区的优化运行问题，建立了功率平衡模型、整数线性规划模型、连续优化调度模型和两层储能配置优化模型，综合运用贪心算法、线性规划和网格搜索等方法进行求解。
+
+针对问题一，建立确定性功率平衡模型，计算得到典型日新能源总发电量603.45~MWh、园区总用电量558.72~MWh、网购电量172.04~MWh、上网电量216.77~MWh。三项绿电直连指标中，自发自用比例$r_1=28.16\%$和上网比例$r_3=35.92\%$不满足政策要求，根本原因是风光出力与负荷需求的时序错配。
+
+针对问题二，建立0-1整数规划模型，利用目标函数可分解性证明贪心策略等价于精确最优解。典型场景下最低吨氨成本为3283.00元/吨（产量36吨/日），绿电指标全满足的最低成本为4652.16元/吨（产量54吨/日）。24种场景全年分析表明，产量36吨/日的年均成本为4585.15元/吨。
+
+针对问题三，建立连续出力系数线性规划模型，采用SLSQP算法求解。连续调节相比离散调节的成本改善幅度为1.73\%--6.58\%，年均吨氨成本降至4283.62元/吨。绿电指标显著改善：全满足天数从0天提升至165天，全不满足天数从45天降为0天。
+
+针对问题四，建立两层储能配置优化模型。无储能离网运行全年产氨9781.8吨，产能利用率37.7\%。最优储能容量410~MWh，配置后风光利用率达100\%，全年产氨10671.3吨，吨氨成本4133.64元/吨。离网模式吨氨成本较联网低149.98元/吨，但产量低18\%，联网模式的核心价值在于保障产量稳定性。
+
+\begin{keywords}
+绿电直连 \quad 电氢氨园区 \quad 功率平衡优化 \quad 储能配置 \quad 线性规划
+\end{keywords}
+\end{abstract}
+
+\maketitle
+\newpage
+\tableofcontents
+\clearpage
+
+% === 正文 ===
+\input{sections/1_restatement}
+\input{sections/2_analysis}
+\input{sections/3_assumptions}
+\input{sections/4_symbols}
+\input{sections/5_problem1}
+\input{sections/6_problem2}
+\input{sections/7_problem3}
+\input{sections/8_problem4}
+\input{sections/9_sensitivity}
+\input{sections/10_evaluation}
+
+% === 参考文献 ===
+\begin{thebibliography}{99}
+\bibitem{ref1} 国家发展改革委, 国家能源局. 关于有序推动绿电直连发展有关事项的通知[Z]. 2024.
+\bibitem{ref2} 张宁, 康重庆, 杜尔顺, 等. 新能源消纳关键因素分析及解决措施研究[J]. 中国电机工程学报, 2017, 37(1): 1--9.
+\bibitem{ref3} 刘坚, 林今, 胡静, 等. 中国氢能产业发展现状与前景分析[J]. 中国电力, 2022, 55(3): 1--10.
+\bibitem{ref4} Miric-Fuentes D, Riegraf M, Sedeqi F, et al. Efficiency optimization of power-to-ammonia systems based on pressurized solid oxide electrolysis[J]. SSRN, 2025.
+\bibitem{ref5} 梅生伟, 郭文涛, 王阳, 等. 电力系统源荷储协调优化运行研究综述[J]. 电力系统自动化, 2022, 46(16): 1--12.
+\bibitem{ref6} Kerdphol T, Qudaih Y, Mitani Y. Battery energy storage system size optimization in microgrid using particle swarm optimization[C]. IEEE PES ISGT Europe, 2014: 1--6.
+\bibitem{ref7} 王锐, 孙宏斌, 郭庆来. 含高比例新能源的电力系统灵活性评估与提升[J]. 电力系统自动化, 2021, 45(1): 1--12.
+\bibitem{ref8} 陈来军, 梅生伟, 等. 储能系统容量优化配置方法综述[J]. 电力系统自动化, 2019, 43(16): 1--15.
+\bibitem{ref9} 李建林, 田立亭, 来小康. 能源互联网背景下的电力储能技术展望[J]. 电力系统自动化, 2015, 39(23): 15--22.
+\bibitem{ref10} 鲁宗相, 乔颖, 王彩霞, 等. 风电并网中的功率预测与调度方法[J]. 中国电机工程学报, 2014, 34(29): 5027--5038.
+\bibitem{ref11} 王伟胜, 范高锋, 刘纯. 风电场有功功率控制策略研究[J]. 电力系统自动化, 2010, 34(17): 87--92.
+\bibitem{ref12} 丁明, 王敏, 等. 分布式发电系统中储能技术应用综述[J]. 电力系统自动化, 2013, 37(1): 14--22.
+\end{thebibliography}
+
+% === 附录 ===
+\begin{appendices}
+\input{sections/A_code}
+\end{appendices}
+
+\end{document}

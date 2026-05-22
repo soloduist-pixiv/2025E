@@ -1,0 +1,329 @@
+{
+  "offgrid_no_storage": {
+    "scenarios": [
+      {
+        "scenario": "W1_P1",
+        "Q_NH3": 39.98,
+        "C_ton": 4225.39,
+        "RE_utilization": 80.58,
+        "E_curtail": 147.93
+      },
+      {
+        "scenario": "W1_P2",
+        "Q_NH3": 30.54,
+        "C_ton": 4000.62,
+        "RE_utilization": 96.02,
+        "E_curtail": 20.05
+      },
+      {
+        "scenario": "W1_P3",
+        "Q_NH3": 19.09,
+        "C_ton": 4357.15,
+        "RE_utilization": 96.27,
+        "E_curtail": 12.6
+      },
+      {
+        "scenario": "W1_P4",
+        "Q_NH3": 13.91,
+        "C_ton": 4801.69,
+        "RE_utilization": 92.79,
+        "E_curtail": 19.66
+      },
+      {
+        "scenario": "W2_P1",
+        "Q_NH3": 36.1,
+        "C_ton": 4073.48,
+        "RE_utilization": 84.98,
+        "E_curtail": 98.99
+      },
+      {
+        "scenario": "W2_P2",
+        "Q_NH3": 23.88,
+        "C_ton": 4004.61,
+        "RE_utilization": 97.66,
+        "E_curtail": 9.38
+      },
+      {
+        "scenario": "W2_P3",
+        "Q_NH3": 11.62,
+        "C_ton": 4760.22,
+        "RE_utilization": 94.32,
+        "E_curtail": 13.32
+      },
+      {
+        "scenario": "W2_P4",
+        "Q_NH3": 6.25,
+        "C_ton": 6175.12,
+        "RE_utilization": 86.51,
+        "E_curtail": 22.92
+      },
+      {
+        "scenario": "W3_P1",
+        "Q_NH3": 42.92,
+        "C_ton": 4117.01,
+        "RE_utilization": 83.82,
+        "E_curtail": 126.37
+      },
+      {
+        "scenario": "W3_P2",
+        "Q_NH3": 33.1,
+        "C_ton": 3906.68,
+        "RE_utilization": 99.29,
+        "E_curtail": 3.73
+      },
+      {
+        "scenario": "W3_P3",
+        "Q_NH3": 21.38,
+        "C_ton": 4202.94,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W3_P4",
+        "Q_NH3": 16.71,
+        "C_ton": 4447.69,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W4_P1",
+        "Q_NH3": 46.19,
+        "C_ton": 4255.94,
+        "RE_utilization": 79.78,
+        "E_curtail": 177.29
+      },
+      {
+        "scenario": "W4_P2",
+        "Q_NH3": 39.35,
+        "C_ton": 3917.21,
+        "RE_utilization": 97.84,
+        "E_curtail": 13.33
+      },
+      {
+        "scenario": "W4_P3",
+        "Q_NH3": 28.07,
+        "C_ton": 4112.46,
+        "RE_utilization": 99.21,
+        "E_curtail": 3.59
+      },
+      {
+        "scenario": "W4_P4",
+        "Q_NH3": 23.4,
+        "C_ton": 4269.19,
+        "RE_utilization": 99.08,
+        "E_curtail": 3.59
+      },
+      {
+        "scenario": "W5_P1",
+        "Q_NH3": 43.38,
+        "C_ton": 4224.69,
+        "RE_utilization": 80.64,
+        "E_curtail": 158.64
+      },
+      {
+        "scenario": "W5_P2",
+        "Q_NH3": 35.44,
+        "C_ton": 3921.74,
+        "RE_utilization": 98.24,
+        "E_curtail": 9.85
+      },
+      {
+        "scenario": "W5_P3",
+        "Q_NH3": 24.17,
+        "C_ton": 4149.83,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W5_P4",
+        "Q_NH3": 19.5,
+        "C_ton": 4346.86,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W6_P1",
+        "Q_NH3": 40.79,
+        "C_ton": 4005.9,
+        "RE_utilization": 87.31,
+        "E_curtail": 90.83
+      },
+      {
+        "scenario": "W6_P2",
+        "Q_NH3": 28.66,
+        "C_ton": 3912.56,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W6_P3",
+        "Q_NH3": 16.68,
+        "C_ton": 4332.77,
+        "RE_utilization": 100.0,
+        "E_curtail": 0.0
+      },
+      {
+        "scenario": "W6_P4",
+        "Q_NH3": 11.01,
+        "C_ton": 5001.85,
+        "RE_utilization": 93.9,
+        "E_curtail": 13.84
+      }
+    ],
+    "annual_Q": 9781.8,
+    "avg_daily_Q": 27.17,
+    "avg_utilization": 37.7,
+    "mean_C_ton": 4313.48,
+    "mean_RE_util": 93.7,
+    "max_curtail_scenario": "W4_P1",
+    "max_curtail_MWh": 177.29
+  },
+  "min_capacity": {
+    "min_wind_MW": 37.7,
+    "min_pv_MW": 60.4
+  },
+  "storage_optimization": {
+    "best_C_bat_MWh": 410.0,
+    "target_scenario": "W4_P1",
+    "best_result": {
+      "Q_NH3": 56.86,
+      "C_ton": 3827.44,
+      "RE_utilization": 100.0
+    },
+    "capacity_cost_curve": {
+      "C_bat_values": [
+        20,
+        40,
+        60,
+        80,
+        100,
+        120,
+        140,
+        160,
+        180,
+        200,
+        220,
+        240,
+        260,
+        280,
+        300,
+        320,
+        340,
+        360,
+        380,
+        400
+      ],
+      "C_ton_values": [
+        4221.38,
+        4206.36,
+        4169.75,
+        4161.53,
+        4103.18,
+        4088.05,
+        4014.89,
+        3944.5,
+        3876.84,
+        3833.22,
+        3832.56,
+        3831.9,
+        3831.3,
+        3830.71,
+        3830.13,
+        3829.56,
+        3829.01,
+        3828.5,
+        3828.0,
+        3827.53
+      ],
+      "Q_NH3_values": [
+        47.47,
+        48.4,
+        49.82,
+        50.6,
+        52.68,
+        52.8,
+        53.86,
+        54.91,
+        55.97,
+        56.67,
+        56.69,
+        56.72,
+        56.73,
+        56.75,
+        56.77,
+        56.79,
+        56.8,
+        56.82,
+        56.84,
+        56.85
+      ]
+    }
+  },
+  "storage_all_scenarios": {
+    "annual_Q": 10671.3,
+    "avg_daily_Q": 29.64,
+    "avg_utilization": 41.2,
+    "mean_C_ton": 4133.64,
+    "mean_RE_util": 100.0,
+    "costs": [
+      3805.77,
+      3905.02,
+      4233.18,
+      4508.4,
+      3767.33,
+      3940.34,
+      4522.47,
+      5225.77,
+      3795.7,
+      3893.23,
+      4201.61,
+      4445.36,
+      3827.44,
+      3874.0,
+      4089.26,
+      4239.42,
+      3821.01,
+      3889.33,
+      4148.75,
+      4345.08,
+      3766.51,
+      3912.0,
+      4330.73,
+      4719.74
+    ],
+    "Q_values": [
+      49.03,
+      31.94,
+      20.05,
+      15.37,
+      42.18,
+      24.59,
+      12.61,
+      7.94,
+      50.53,
+      33.36,
+      21.43,
+      16.75,
+      56.86,
+      40.24,
+      28.37,
+      23.7,
+      52.89,
+      36.08,
+      24.22,
+      19.54,
+      46.27,
+      28.7,
+      16.72,
+      12.05
+    ]
+  },
+  "grid_vs_offgrid": {
+    "offgrid_cost": 4133.64,
+    "grid_cost": 4283.62,
+    "cost_diff": -149.98,
+    "offgrid_daily_Q": 29.6,
+    "grid_Q": 36,
+    "system_support_value": 149.98
+  }
+}

@@ -1,0 +1,155 @@
+\section{问题四：离网运行及储能配置研究}
+
+\subsection{模型建立}
+
+问题四研究园区离网运行场景，切断与外部电网的连接（$P_{\text{buy}} = P_{\text{sell}} = 0$），园区用能完全依赖风光发电。产能72吨/日，功率连续可调（下限10\%）。求解流程如图\ref{fig:flow_q4}所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.38\textheight,keepaspectratio]{../figures/fig_flow_q4.pdf}
+\caption{问题四求解流程图}\label{fig:flow_q4}
+\end{figure}
+
+\subsubsection{无储能离网模型}
+
+离网无储能时，每时段的制氢氨负荷受限于当时的风光可用功率：
+\begin{equation}
+\alpha(t) \cdot P_{\text{H2NH3}} + P_{\text{load}}(t) \leq P_{\text{wind}}(t) + P_{\text{pv}}(t)
+\end{equation}
+
+目标为最大化产氨量（尽限利用风光）：
+\begin{equation}
+\max \quad Q_{\text{NH3}} = \sum_{t=1}^{24} \alpha(t) \cdot 3.0
+\end{equation}
+
+每时段的最大可用出力系数为：
+\begin{equation}
+\alpha_{\max}(t) = \min\left(\frac{P_{\text{wind}}(t) + P_{\text{pv}}(t) - P_{\text{load}}(t)}{P_{\text{H2NH3}}}, 1\right)
+\end{equation}
+
+若$\alpha_{\max}(t) < 0.1$则该时段停机，否则$\alpha(t) = \alpha_{\max}(t)$。弃电量为风光可用功率超出负荷消纳能力的部分：
+\begin{equation}
+E_{\text{curtail}} = \sum_{t=1}^{24} \max\left(P_{\text{wind}}(t) + P_{\text{pv}}(t) - P_{\text{load}}(t) - \alpha(t) \cdot P_{\text{H2NH3}}, 0\right)
+\end{equation}
+
+\subsubsection{含储能离网模型}
+
+引入储能后，功率平衡方程变为：
+\begin{equation}
+\alpha(t) \cdot P_{\text{H2NH3}} + P_{\text{load}}(t) + P_{\text{ch}}(t) = P_{\text{wind}}(t) + P_{\text{pv}}(t) + P_{\text{dis}}(t)
+\end{equation}
+
+储能SOC动态方程：
+\begin{equation}
+E(t+1) = (1 - \sigma) \cdot E(t) + \eta_{\text{ch}} \cdot P_{\text{ch}}(t) - \frac{P_{\text{dis}}(t)}{\eta_{\text{dis}}}
+\end{equation}
+
+其中$\eta_{\text{ch}} = \eta_{\text{dis}} = 0.9$为充放电效率，$\sigma = 0.002$/h为自损耗率。SOC范围约束$0.1 C_{\text{bat}} \leq E(t) \leq 0.9 C_{\text{bat}}$，日循环约束$E(1) = E(25) = 0.5 C_{\text{bat}}$。
+
+储能配置优化采用两层结构\cite{ref8}：外层网格搜索最优容量$C_{\text{bat}} \in [10, 500]$~MWh（步长10~MWh粗搜 + 1~MWh细搜），内层在给定容量下用线性规划求解最优调度方案。目标函数为最小化含储能折旧的吨氨成本：
+\begin{equation}
+C_{\text{ton}} = \frac{C_{\text{RE}} + C_{\text{OM}} + C_{\text{dep}} + C_{\text{bat,dep}}}{Q_{\text{NH3}}}
+\end{equation}
+
+其中储能日折旧$C_{\text{bat,dep}} = C_{\text{bat}} \times 1000 / (15 \times 365)$元/日。
+
+\subsection{无储能离网运行结果}
+
+\subsubsection{各场景产氨量}
+
+24种风光场景下的离网日产氨量如图\ref{fig:q4_offgrid_production}所示。不同场景间产量差异显著，高风光场景（如风电场景4+光伏场景1）日产氨可达46.19吨，而低风光场景日产氨仅约15--20吨。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{../figures/fig_q4_offgrid_production.pdf}
+\caption{24种风光场景下离网运行日产氨量}\label{fig:q4_offgrid_production}
+\end{figure}
+
+全年离网运行的关键指标如表\ref{tab:q4_offgrid}所示。全年产氨总量9781.8吨，日均27.17吨，产能利用率37.7\%，远低于联网模式下的产量水平。风光利用率93.7\%表明仍有6.3\%的风光电力因负荷饱和（$\alpha$已达上限1.0）而被弃。
+
+\begin{table}[H]
+\centering
+\caption{无储能离网运行全年指标}\label{tab:q4_offgrid}
+\begin{tabular}{lcc}
+\toprule
+指标 & 数值 & 单位 \\
+\midrule
+全年产氨总量 & 9781.8 & 吨 \\
+日均产氨 & 27.17 & 吨/日 \\
+产能利用率 & 37.7 & \% \\
+平均吨氨成本 & 4313.48 & 元/吨 \\
+风光利用率 & 93.7 & \% \\
+最大弃电场景 & W4\_P1 & --- \\
+最大弃电量 & 177.29 & MWh \\
+最小风电装机 & 37.7 & MW \\
+最小光伏装机 & 60.4 & MW \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+能源自给的最小风光装机容量估算基于最差场景下维持10\%负荷运行的约束，计算得到最小风电装机37.7~MW、最小光伏装机60.4~MW，分别为当前装机的94.3\%和94.4\%，表明当前风光配置已接近能源自给的下限。
+
+\subsection{储能配置优化结果}
+
+\subsubsection{最优储能容量}
+
+针对最大弃电场景（W4\_P1，弃电177.29~MWh），储能容量与吨氨成本、日产氨量的关系如图\ref{fig:q4_storage_optimization}所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/fig_q4_storage_optimization.pdf}
+\caption{储能容量与吨氨成本、日产氨量关系曲线}\label{fig:q4_storage_optimization}
+\end{figure}
+
+随着储能容量增加，日产氨量先快速上升后趋于饱和，吨氨成本先下降后因储能折旧增加而回升。最优储能容量为410~MWh，此时吨氨成本达到最低点。在该容量下，最大弃电场景的运行指标显著改善：日产氨从46.19吨提升至56.86吨，吨氨成本从4255.94元/吨降至3827.44元/吨，风光利用率从79.8\%提升至100\%。
+
+\subsubsection{储能SOC变化}
+
+最大弃电场景下储能SOC的24小时变化曲线如图\ref{fig:q4_soc_curve}所示。白天风光充裕时段储能充电，SOC从初始50\%上升至约85\%；傍晚和夜间风光不足时段储能放电支撑生产，SOC逐步回落至50\%，满足日循环约束。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/fig_q4_soc_curve.pdf}
+\caption{最大弃电场景储能SOC变化曲线}\label{fig:q4_soc_curve}
+\end{figure}
+
+储能的引入实现了风光电力在时间维度上的转移：将白天富余的风光电力储存，在夜间释放用于制氢氨生产，有效解决了风光出力与负荷需求的时序错配问题。
+
+\subsubsection{弃电改善}
+
+有无储能条件下各场景弃电量的对比如图\ref{fig:q4_curtail_compare}所示。配置410~MWh储能后，所有场景的弃电量均降为零，风光利用率达到100\%，实现了风光电力的完全消纳。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{../figures/fig_q4_curtail_compare.pdf}
+\caption{有无储能弃电量对比}\label{fig:q4_curtail_compare}
+\end{figure}
+
+有储能参与后的全年运行指标为：全年产氨总量10671.3吨（较无储能提升9.1\%），产能利用率41.2\%，平均吨氨成本4133.64元/吨（较无储能降低4.2\%）。储能的价值不仅体现在减少弃电，更在于通过时间转移使得夜间也能维持较高的生产负荷。
+
+\subsection{离网与联网经济性对比}
+
+在满足相同制氨产量需求的前提下，离网（有储能）与联网（问题三最优方案）两种模式的经济性对比如图\ref{fig:q4_onoff_compare}和表\ref{tab:q4_compare}所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/fig_q4_onoff_compare.pdf}
+\caption{离网与联网运行模式经济性对比}\label{fig:q4_onoff_compare}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{离网与联网模式经济性对比}\label{tab:q4_compare}
+\begin{tabular}{lccc}
+\toprule
+指标 & 离网(有储能) & 联网(问题三) & 差异 \\
+\midrule
+日均产量(吨/日) & 29.6 & 36 & $-$6.4 \\
+吨氨成本(元/吨) & 4133.64 & 4283.62 & $-$149.98 \\
+风光利用率(\%) & 100 & --- & --- \\
+产能利用率(\%) & 41.2 & 50.0 & $-$8.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+离网模式的吨氨成本（4133.64元/吨）略低于联网模式（4283.62元/吨），差异149.98元/吨即为电力系统支撑的成本价值。然而，离网模式的日均产量仅29.6吨，较联网模式的36吨低约18\%，全年总产量差距约23\%。联网模式的核心价值在于保障产量的稳定性和灵活性：通过电网购电弥补风光不足时段的电力缺口，使得生产不受风光波动的严格约束。从全年总产值角度看，联网模式虽然单位成本略高，但更高的产量带来的总收益远超成本差异。

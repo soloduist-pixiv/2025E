@@ -1,0 +1,80 @@
+\contentsline {section}{\numberline {一、\hspace {-.5em}}问题重述}{5}{section.1}%
+\contentsline {section}{\numberline {二、\hspace {-.5em}}问题分析}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}问题一分析}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}问题二分析}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}问题三分析}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}问题四分析}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}不确定性刻画与多维度综合评价方法设计}{7}{subsection.2.5}%
+\contentsline {section}{\numberline {三、\hspace {-.5em}}模型假设}{8}{section.3}%
+\contentsline {section}{\numberline {四、\hspace {-.5em}}符号说明}{9}{section.4}%
+\contentsline {section}{\numberline {五、\hspace {-.5em}}问题一：典型风光场景下运行指标分析}{10}{section.5}%
+\contentsline {subsection}{\numberline {5.1}模型建立}{10}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}能量指标计算}{11}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}吨氨成本模型}{11}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}计算结果}{11}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}功率平衡曲线}{11}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}能量指标与绿电直连指标}{12}{subsubsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.5}指标不满足原因分析}{13}{subsection.5.5}%
+\contentsline {section}{\numberline {六、\hspace {-.5em}}问题二：基于离散制氨调节的运行优化}{13}{section.6}%
+\contentsline {subsection}{\numberline {6.1}模型建立}{13}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}求解算法}{14}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}典型场景计算结果}{15}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}各产量最优方案}{15}{subsubsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.4}24种场景全年分析}{17}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}各产量成本分布}{17}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}绿电指标统计}{18}{subsubsection.6.4.2}%
+\contentsline {subsubsection}{\numberline {6.4.3}全年吨氨成本分布}{18}{subsubsection.6.4.3}%
+\contentsline {section}{\numberline {七、\hspace {-.5em}}问题三：基于连续制氨调节的运行优化}{19}{section.7}%
+\contentsline {subsection}{\numberline {7.1}模型建立}{19}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}求解算法}{20}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}24种场景全年分析}{20}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}最优调度方案}{20}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}全年统计结果}{21}{subsubsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.4}与问题二对比分析}{21}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}成本对比}{21}{subsubsection.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}绿电指标对比}{22}{subsubsection.7.4.2}%
+\contentsline {subsection}{\numberline {7.5}连续调节功率下限的灵敏度边界与合规成本探讨}{23}{subsection.7.5}%
+\contentsline {section}{\numberline {八、\hspace {-.5em}}问题四：离网运行及储能配置研究}{25}{section.8}%
+\contentsline {subsection}{\numberline {8.1}模型建立}{25}{subsection.8.1}%
+\contentsline {subsubsection}{\numberline {8.1.1}无储能离网模型}{25}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {8.1.2}含储能离网模型}{26}{subsubsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.2}储能容量配置优化算法的计算复杂度与收敛性对比分析}{26}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}计算复杂度对比}{26}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}全局收敛性与鲁棒性分析}{27}{subsubsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.3}无储能离网运行结果}{27}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}各场景产氨量}{27}{subsubsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.4}储能配置优化结果}{28}{subsection.8.4}%
+\contentsline {subsubsection}{\numberline {8.4.1}最优储能容量}{28}{subsubsection.8.4.1}%
+\contentsline {subsubsection}{\numberline {8.4.2}储能SOC变化}{29}{subsubsection.8.4.2}%
+\contentsline {subsubsection}{\numberline {8.4.3}弃电改善}{30}{subsubsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.5}离网与联网经济性对比}{30}{subsection.8.5}%
+\contentsline {section}{\numberline {九、\hspace {-.5em}}灵敏度分析与模型检验}{31}{section.9}%
+\contentsline {subsection}{\numberline {9.1}灵敏度分析方法}{31}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}灵敏度分析结果}{32}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}模型检验}{32}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}能量守恒验证}{32}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}约束满足验证}{33}{subsubsection.9.3.2}%
+\contentsline {subsubsection}{\numberline {9.3.3}资源单调性验证}{33}{subsubsection.9.3.3}%
+\contentsline {section}{\numberline {十、\hspace {-.5em}}问题五：绿电直连园区对电力系统的影响及政策建议}{33}{section.10}%
+\contentsline {subsection}{\numberline {10.1}绿电直连园区容量渗透率提高的影响}{33}{subsection.10.1}%
+\contentsline {subsubsection}{\numberline {10.1.1}有利影响}{33}{subsubsection.10.1.1}%
+\contentsline {subsubsection}{\numberline {10.1.2}不利影响}{33}{subsubsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.2}政策建议}{34}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}基于 GRA-Entropy-TOPSIS 的园区多维度综合评价量化模型}{34}{subsection.10.3}%
+\contentsline {subsubsection}{\numberline {10.3.1}评价指标体系设计}{34}{subsubsection.10.3.1}%
+\contentsline {subsubsection}{\numberline {10.3.2}数学建模步骤}{35}{subsubsection.10.3.2}%
+\contentsline {subsubsection}{\numberline {10.3.3}量化结果与深度剖析}{36}{subsubsection.10.3.3}%
+\contentsline {section}{\numberline {十一、\hspace {-.5em}}模型评价与推广}{37}{section.11}%
+\contentsline {subsection}{\numberline {11.1}模型优点}{37}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}模型不足}{37}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}模型推广}{38}{subsection.11.3}%
+\contentsline {section}{Appendices}{39}{section*.2}%
+\contentsline {section}{附录 \numberline {A}核心代码}{39}{section.1.A}%
+\contentsline {subsection}{\numberline {1.1}公共工具模块}{39}{subsection.1.A.1}%
+\contentsline {subsection}{\numberline {1.2}问题一：功率平衡计算}{39}{subsection.1.A.2}%
+\contentsline {subsection}{\numberline {1.3}问题二：离散调节优化}{40}{subsection.1.A.3}%
+\contentsline {subsection}{\numberline {1.4}问题三：连续调节优化}{40}{subsection.1.A.4}%
+\contentsline {subsection}{\numberline {1.5}问题四：储能配置优化}{41}{subsection.1.A.5}%
+\contentsline {subsection}{\numberline {1.6}拓展一：BSTS 风光不确定性结构化刻画代码}{41}{subsection.1.A.6}%
+\contentsline {subsection}{\numberline {1.7}拓展二：GRA-Entropy-TOPSIS 多维度量化评价代码}{42}{subsection.1.A.7}%
+\contentsfinish 

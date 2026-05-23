@@ -144,3 +144,88 @@ def solve_offgrid_with_storage(P_wind, P_pv, P_load, C_bat):
                   b_eq=np.array(b_eq_rows), bounds=bounds)
     return res
 \end{lstlisting}
+
+\subsection{拓展一：BSTS 风光不确定性结构化刻画代码}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+"""BSTS风光出力结构化刻画与波动性分析"""
+import numpy as np
+import pandas as pd
+
+def perform_bsts_decomposition(wind_data, pv_data):
+    # 风电场景分析 (24时段, 6种场景)
+    wind_mu = np.mean(wind_data, axis=0)  # 趋势项
+    wind_seasonal = np.mean(wind_data - wind_mu, axis=1)  # 共享日周期项
+    wind_seasonal = wind_seasonal - np.mean(wind_seasonal)  # 保证和为0
+    
+    wind_epsilon = np.zeros_like(wind_data)
+    for s in range(wind_data.shape[1]):
+        wind_epsilon[:, s] = wind_data[:, s] - wind_mu[s] - wind_seasonal
+    wind_volatility = np.std(wind_epsilon, axis=0)  # 随机波动性标准差
+
+    # 光伏场景分析 (24时段, 4种场景)
+    pv_mu = np.mean(pv_data, axis=0)  # 趋势项
+    pv_seasonal = np.mean(pv_data - pv_mu, axis=1)  # 共享日周期项
+    pv_seasonal = pv_seasonal - np.mean(pv_seasonal)
+    
+    pv_epsilon = np.zeros_like(pv_data)
+    for s in range(pv_data.shape[1]):
+        pv_epsilon[:, s] = pv_data[:, s] - pv_mu[s] - pv_seasonal
+    pv_volatility = np.std(pv_epsilon, axis=0)  # 随机波动性标准差
+
+    return {
+        'wind_mu': wind_mu, 'wind_volatility': wind_volatility,
+        'pv_mu': pv_mu, 'pv_volatility': pv_volatility
+    }
+\end{lstlisting}
+
+\subsection{拓展二：GRA-Entropy-TOPSIS 多维度量化评价代码}
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, breaklines=true]
+"""GRA-Entropy-TOPSIS多维度综合决策模型"""
+import numpy as np
+
+def run_gra_entropy_topsis(X):
+    n_schemes, n_indicators = X.shape
+    
+    # 1. 极值标准化 Z
+    Z = np.zeros_like(X)
+    for j in range(n_indicators):
+        col = X[:, j]
+        min_val, max_val = np.min(col), np.max(col)
+        if j == 0:  # 成本型
+            Z[:, j] = (max_val - col) / (max_val - min_val)
+        else:       # 效益型
+            Z[:, j] = (col - min_val) / (max_val - min_val)
+            
+    # 2. 熵权法计算权重
+    epsilon = 1e-12
+    p = Z / np.sum(Z, axis=0)
+    E = -np.sum(p * np.log(p + epsilon), axis=0) / np.log(n_schemes)
+    D = 1.0 - E
+    weights = D / np.sum(D)
+    
+    # 3. TOPSIS 贴近度计算
+    V = Z * weights
+    V_plus = np.max(V, axis=0)
+    V_minus = np.min(V, axis=0)
+    D_plus = np.sqrt(np.sum((V - V_plus)**2, axis=1))
+    D_minus = np.sqrt(np.sum((V - V_minus)**2, axis=1))
+    topsis_scores = D_minus / (D_plus + D_minus)
+    
+    # 4. 灰色关联度 (GRA) 计算 (分辨系数 rho=0.5)
+    rho = 0.5
+    xi = np.zeros_like(V)
+    for i in range(n_schemes):
+        for j in range(n_indicators):
+            dist = abs(V_plus[j] - V[i, j])
+            min_dist = np.min(np.abs(V - V_plus))
+            max_dist = np.max(np.abs(V - V_plus))
+            xi[i, j] = (min_dist + rho * max_dist) / (dist + rho * max_dist)
+    gra_scores = np.dot(xi, weights)
+    
+    # 5. 组合评分 (50% TOPSIS + 50% GRA)
+    combined_scores = 0.5 * topsis_scores + 0.5 * gra_scores
+    return weights, topsis_scores, gra_scores, combined_scores
+\end{lstlisting}
+
